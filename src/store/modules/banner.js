@@ -1,4 +1,4 @@
-import {reqcateList} from "../../utils/http"
+import {reqbannerList} from "../../utils/http"
 const state = {
     //分类list
     list:[]
@@ -15,7 +15,7 @@ const actions = {
     //发起请求
     reqList(context){
         //发请求，成功之后，修改list
-        reqcateList({istree:true}).then(res=>{
+        reqbannerList({istree:true}).then(res=>{
             context.commit("changeList",res.data.list)
         })
     }

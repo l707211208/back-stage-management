@@ -34,8 +34,8 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import {reqMenuDel} from "../../../untils/http"
-import{successAlert,errorAlert}from "../../../untils/alert"
+import {reqMenuDel} from "../../../utils/http"
+import{successAlert,errorAlert}from "../../../utils/alert"
 export default {
   props: ["list"],
   computed: {

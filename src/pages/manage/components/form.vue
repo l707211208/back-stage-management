@@ -38,8 +38,8 @@ import {
   reqUserAdd,
   reqUserDetail,
   reqUserUpdate,
-} from "../../../untils/http";
-import { successAlert } from "../../../untils/alert";
+} from "../../../utils/http";
+import { successAlert } from "../../../utils/alert";
 export default {
   props: ["info"],
   computed: {

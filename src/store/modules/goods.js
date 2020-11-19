@@ -1,18 +1,20 @@
-import { reqspecsList,reqspecsCount } from "../../utils/http"
+import { reqgoodsList, reqgoodsCount } from "../../utils/http"
 const state = {
     //分类list
     list: [],
-    page: 1,
+    //总数
+    total: 0,
     size: 2,
-    total: 0
+    page: 1,
 }
 
 const mutations = {
     //修改list
     changeList(state, arr) {
         state.list = arr;
+        console.log(state.list);
     },
-    changeTotal(state,num) {
+    changeTotal(state, num) {
         state.total = num;
     },
     changePage(state, page) {
@@ -21,11 +23,9 @@ const mutations = {
 }
 
 const actions = {
-   
-    reqList(context,bool) {
-        let params=bool?{}:{page:context.state.page,size:context.state.size}
+    reqList(context) {
         //发请求，成功之后，修改list
-        reqspecsList(params).then(res => {
+        reqgoodsList({ page: context.state.page, size: context.state.size }).then(res => {
             let list = res.data.list ? res.data.list : []
 
             if (list.length == 0 && context.state.page > 1) {
@@ -34,23 +34,20 @@ const actions = {
                 return;
             }
 
-            list.forEach(item => {
-                item.attrs = JSON.parse(item.attrs)
-            })
             context.commit("changeList", list)
         })
     },
-
-    // 总数
-    reqCount(context){
-        reqspecsCount().then(res=>{
-            context.commit("changeTotal",res.data.list[0].total)
+    //请总数
+    reqCount(context) {
+        reqgoodsCount().then(res => {
+            context.commit("changeTotal", res.data.list[0].total)
         })
     },
-    changePage(context,page){
-        // 翻页 
-        context.commit("changePage",page)
-        //重新请求数据
+    //修改页码
+    changePage(context, page) {
+        //修改页码
+        context.commit("changePage", page)
+        //从新请求数据
         context.dispatch("reqList")
     }
 }
@@ -61,7 +58,7 @@ const getters = {
     },
     total(state) {
         return state.total
-    }, 
+    },
     size(state) {
         return state.size
     },

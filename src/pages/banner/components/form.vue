@@ -2,19 +2,9 @@
   <div class="box">
     <el-dialog :title="info.title" :visible.sync="info.isshow" @closed="closed">
       <el-form :model="user">
-        <el-form-item label="上级分类" label-width="120px">
-          <el-select placeholder="请选择分类" v-model="user.pid">
-            <el-option :value="0" label="顶级分类"></el-option>
-            <el-option
-              v-for="item in cateList"
-              :key="item.id"
-              :value="item.id"
-              :label="item.catename"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="分类名称" label-width="120px">
-          <el-input v-model="user.catename" autocomplete="off"></el-input>
+       
+        <el-form-item label="标题" label-width="120px">
+          <el-input v-model="user.title" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="图片" label-width="120px" v-if="user.pid!==0">
           <el-upload
@@ -44,22 +34,22 @@
 import path from "path";
 import { mapActions, mapGetters } from "vuex";
 import {
-  reqRoleList,
-  reqcateAdd,
-  reqcateDetail,
-  reqcateUpdate,
+  reqbannerList,
+  reqbannerAdd,
+  reqbannerDetail,
+  reqbannerUpdate,
 } from "../../../utils/http";
 import { successAlert ,errorAlert} from "../../../utils/alert";
 export default {
   props: ["info"],
   computed: {
     ...mapGetters({
-      cateList: "cate/list",
+      bannerList: "banner/list",
     }),
   },
   methods: {
     ...mapActions({
-      reqList: "cate/reqList",
+      reqList: "banner/reqList",
     }),
     cancel() {
       this.info.isshow = false;
@@ -87,7 +77,7 @@ export default {
       }
     },
     add() {
-      reqcateAdd(this.user).then((res) => {
+      reqbannerAdd(this.user).then((res) => {
         if (res.data.code == 200) {
           //弹成功
           successAlert("添加成功");
@@ -98,14 +88,14 @@ export default {
       });
     },
     getOne(id) {
-      reqcateDetail(id).then((res) => {
+      reqbannerDetail(id).then((res) => {
         this.user = res.data.list;
         this.imgUrl = this.$imgpre + this.user.img;
         this.user.id = id;
       });
     },
     update() {
-      reqcateUpdate(this.user).then((res) => {
+      reqbannerUpdate(this.user).then((res) => {
         if (res.data.code == 200) {
           //弹成功
           successAlert("修改成功");
@@ -122,12 +112,12 @@ export default {
     empty() {
         console.log(11111111);
       this.user = {
-        pid: "",
-        catename: "",
+        title: "",
         img: null,
         status: 1,
       };
       this.imgUrl = "";
+      this.bannerlist=[]
     },
     closed() {
       if (this.info.title === "编辑分类") {
@@ -138,18 +128,18 @@ export default {
   data() {
     return {
       user: {
-        pid: "",
-        catename: "",
+        title: "",
         img: null,
         status: 1,
       },
       imgUrl: "",
+      bannerlist:[]
     };
   },
   mounted() {
-    reqRoleList().then((res) => {
+    reqbannerList().then((res) => {
       if (res.data.code == 200) {
-        this.roleList = res.data.list;
+        this.bannerlist = res.data.list;
       }
     });
   },

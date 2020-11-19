@@ -17,8 +17,8 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { reqLogin } from "../../untils/http";
-import { successAlert } from "../../untils/alert";
+import { reqLogin } from "../../utils/http";
+import { successAlert } from "../../utils/alert";
 export default {
   computed: {
     ...mapGetters({}),

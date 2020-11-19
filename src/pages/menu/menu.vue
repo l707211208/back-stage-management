@@ -10,7 +10,7 @@
 import { mapActions, mapGetters } from "vuex";
 import vList from "./components/list.vue";
 import vForm from "./components/form.vue";
-import { reqMenuList } from "../../untils/http"; 
+import { reqMenuList } from "../../utils/http"; 
 export default {
   computed: {
     ...mapGetters({}),

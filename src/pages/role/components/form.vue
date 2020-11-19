@@ -29,8 +29,8 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { reqMenuList, reqRoleAdd,reqRoleDetail,   reqRoleUpdate} from "../../../untils/http";
-import { successAlert } from "../../../untils/alert";
+import { reqMenuList, reqRoleAdd,reqRoleDetail,   reqRoleUpdate} from "../../../utils/http";
+import { successAlert } from "../../../utils/alert";
 export default {
   props: ["info"],
   computed: {

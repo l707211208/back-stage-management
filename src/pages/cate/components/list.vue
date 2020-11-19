@@ -33,8 +33,8 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { reqcateDel } from "../../../untils/http";
-import { successAlert } from "../../../untils/alert";
+import { reqcateDel } from "../../../utils/http";
+import { successAlert } from "../../../utils/alert";
 export default {
   computed: {
     ...mapGetters({

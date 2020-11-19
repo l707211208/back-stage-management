@@ -8,11 +8,11 @@
       default-expand-all
       :tree-props="{children: 'children'}"
     >
-      <el-table-column prop="id" label="规格编号"></el-table-column>
-      <el-table-column prop="specsname" label="规格名称"></el-table-column>
-      <el-table-column label="规格属性" sortable>
+      <el-table-column prop="id" label="编号"></el-table-column>
+      <el-table-column prop="title" label="轮播图标题"></el-table-column>
+      <el-table-column label="图片" sortable>
         <template slot-scope="scope">
-          <el-tag v-for="item in scope.row.attrs" :key="item">{{item}}</el-tag>
+          <img :src="$imgPre+scope.row.img" alt />
         </template>
       </el-table-column>
       <el-table-column label="状态">
@@ -28,41 +28,29 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      background
-      layout="prev, pager, next"
-      :total="total"
-      :page-size="size"
-      @current-change="changePage"
-    ></el-pagination>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import { reqspecsDel } from "../../../utils/http";
+import { reqbannerDel } from "../../../utils/http";
 import { successAlert } from "../../../utils/alert";
 export default {
   computed: {
     ...mapGetters({
-      list: "specs/list",
-      total: "specs/total",
-      size: "specs/size",
+      list: "banner/list",
     }),
   },
   methods: {
     ...mapActions({
-      reqList: "specs/reqList",
-      reqCount: "specs/reqCount",
-      changePage: "specs/changePage",
+      reqList: "banner/reqList",
     }),
 
     del(id) {
-      reqspecsDel(id).then((res) => {
+      reqbannerDel(id).then((res) => {
         if (res.data.code == 200) {
           successAlert(res.data.msg);
           this.reqList();
-          this.reqCount();
         }
       });
     },
@@ -73,7 +61,6 @@ export default {
 
   mounted() {
     this.reqList();
-    this.reqCount();
   },
 };
 </script>

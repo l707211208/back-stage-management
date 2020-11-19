@@ -13,7 +13,7 @@
 import { mapActions, mapGetters } from "vuex";
 import vList from "./components/list.vue";
 import vForm from "./components/form.vue";
-import { reqUserList, reqUserCount } from "../../untils/http";
+import { reqUserList, reqUserCount } from "../../utils/http";
 export default {
   components: {
     vList,

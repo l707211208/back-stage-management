@@ -12,7 +12,7 @@
 import { mapActions, mapGetters } from "vuex";
 import vList from "./components/list.vue";
 import vForm from "./components/form.vue";
-import { reqRoleList } from "../../untils/http";
+import { reqRoleList } from "../../utils/http";
 export default {
   components: {
     vList,

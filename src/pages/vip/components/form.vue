@@ -29,8 +29,8 @@ import {
   reqMemberUpdate,
   reqMemberList,
   reqMemberDetail,
-} from "../../../untils/http";
-import {successAlert,errorAlert} from "../../../untils/alert"
+} from "../../../utils/http";
+import {successAlert,errorAlert} from "../../../utils/alert"
 export default {
   props: ["info"],
   computed: {

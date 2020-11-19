@@ -33,8 +33,8 @@ import {
   reqspecsAdd,
   reqspecsDetail,
   reqspecsUpdate,
-} from "../../../untils/http";
-import { successAlert, errorAlert } from "../../../untils/alert";
+} from "../../../utils/http";
+import { successAlert, errorAlert } from "../../../utils/alert";
 export default {
   props: ["info"],
   computed: {

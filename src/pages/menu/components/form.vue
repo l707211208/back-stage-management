@@ -49,8 +49,8 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import { routes } from "../../../router/index";
-import { reqMenuAdd ,reqMenuUpdate,reqMenuDetail} from "../../../untils/http";
-import { successAlert, errorAlert } from "../../../untils/alert";
+import { reqMenuAdd ,reqMenuUpdate,reqMenuDetail} from "../../../utils/http";
+import { successAlert, errorAlert } from "../../../utils/alert";
 export default {
   props: ["info", "list"],
   computed: {

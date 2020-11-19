@@ -1,0 +1,376 @@
+<template>
+  <div class="box">
+    <el-dialog :title="info.title" :visible.sync="info.isshow" @closed="closed" @opened="opened">
+      <el-form :model="user" :rules="rules">
+        <el-form-item label="一级分类" label-width="120px" prop="first_cateid">
+          <el-select placeholder="请选择一级分类" v-model="user.first_cateid" @change="changeFirst">
+            <!-- <el-option :value="1" label="家用电器"></el-option> -->
+            <el-option
+              v-for="item in cateList"
+              :key="item.id"
+              :value="item.id"
+              :label="item.catename"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="二级分类" label-width="120px" prop="second_cateid">
+          <el-select placeholder="请选择二级分类" v-model="user.second_cateid">
+            <!-- <el-option :value="1" label="洗衣机"></el-option> -->
+            <el-option
+              v-for="item in secondCateList"
+              :key="item.id"
+              :value="item.id"
+              :label="item.catename"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="商品名称" label-width="120px" prop="goodsname">
+          <el-input v-model="user.goodsname" placeholder="请输入商品名称"></el-input>
+        </el-form-item>
+        <el-form-item label="价格" label-width="120px" prop="price">
+          <el-input v-model="user.price" placeholder="请输入商品价格"></el-input>
+        </el-form-item>
+        <el-form-item label="市场价格" label-width="120px" prop="market_price">
+          <el-input v-model="user.market_price" placeholder="请输入商品市场价格"></el-input>
+        </el-form-item>
+        <el-form-item label="图片" label-width="120px" v-if="user.pid!==0">
+          <el-upload
+            class="avatar-uploader"
+            action="#"
+            :show-file-list="false"
+            :on-change="changeFile"
+          >
+            <img v-if="imgUrl" :src="imgUrl" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+        <el-form-item label="商品规格" label-width="120px" prop="specsid">
+          <el-select placeholder="请选择规格" v-model="user.specsid" @change="changeSpecsId">
+            <!-- <el-option :value="1" label="尺寸"></el-option> -->
+            <el-option
+              v-for="item in specsList"
+              :key="item.id"
+              :value="item.id"
+              :label="item.specsname"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="规格属性" label-width="120px" prop="specsattr">
+          <el-select placeholder="请选择规格属性" v-model="user.specsattr" multiple>
+            <!-- <el-option :value="1" label="颜色"></el-option> -->
+            <el-option v-for="item in attrsList" :key="item" :value="item" :label="item"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否新品" label-width="120px">
+          <el-radio v-model="user.isnew" :label="1">是</el-radio>
+          <el-radio v-model="user.isnew" :label="2">否</el-radio>
+        </el-form-item>
+        <el-form-item label="是否热卖" label-width="120px">
+          <el-radio v-model="user.ishot" :label="1">是</el-radio>
+          <el-radio v-model="user.ishot" :label="2">否</el-radio>
+        </el-form-item>
+
+        <el-form-item label="状态" label-width="120px">
+          <el-switch v-model="user.status" :active-value="1" :inactive-value="2"></el-switch>
+        </el-form-item>
+        <el-form-item label="描述" label-width="120px">
+          <!-- 富文本 -->
+          <div v-if="info.isshow" id="edit"></div>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancel">取 消</el-button>
+        <el-button type="primary" @click="add" v-if="info.title=='添加商品'">添 加</el-button>
+        <el-button type="primary" @click="update" v-else>修 改</el-button>
+      </div>
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import E from "wangeditor";
+import path from "path";
+import { mapActions, mapGetters } from "vuex";
+import {
+  reqcateList,
+  reqgoodsAdd,
+  reqgoodsDetail,
+  reqgoodsUpdate,
+} from "../../../utils/http";
+import { successAlert, errorAlert } from "../../../utils/alert";
+export default {
+  props: ["info"],
+  computed: {
+    ...mapGetters({
+      cateList: "cate/list",
+      specsList: "specs/list",
+    }),
+  },
+  methods: {
+    ...mapActions({
+      // 请求规格列表
+      reqCateList: "cate/reqList",
+      reqSpecsList: "specs/reqList",
+      //商品list和总数
+      reqGoodsList: "goods/reqList",
+      reqGoodsCount: "goods/reqCount",
+    }),
+    cancel() {
+      this.info.isshow = false;
+    },
+    //弹框打开，并且动画结束
+    opened() {
+      this.editor = new E("#edit");
+      this.editor.create();
+      this.editor.txt.html(this.user.description);
+    },
+
+    // 上传图片
+    changeFile(e) {
+      let file = e.raw;
+      this.imgUrl = URL.createObjectURL(file);
+      this.user.img = file;
+      //判断文件大小
+      if (file.size > 2 * 1024 * 1024) {
+        errorAlert("文件大小不能超过2M");
+        return;
+      }
+      //判断文件类型
+      let extname = path.extname(file.name);
+      let arr = [".jpg", ".jpeg", ".png", ".gif"];
+      if (!arr.includes(extname)) {
+        errorAlert("请上传正确的图片格式！");
+        return;
+      }
+    },
+    // 根据一级分类 获取2级分类数据
+    changeFirst() {
+      this.user.second_cateid = "";
+      this.getSecondList();
+    },
+    // 根据一级分类 获取2级分类
+    getSecondList() {
+      reqcateList({ pid: this.user.first_cateid }).then((res) => {
+        this.secondCateList = res.data.list;
+      });
+    },
+    changeSpecsId() {
+      // console.log(1111111);
+      // console.log(this.user);
+      this.user.specsattr = [];
+      this.getAttrs();
+    },
+    getAttrs() {
+      let obj = this.specsList.find((item) => item.id === this.user.specsid);
+      this.attrsList = obj.attrs;
+      console.log(obj);
+    },
+
+    add() {
+      this.check().then(() => {
+        this.user.description = this.editor.txt.html();
+        let d = { ...this.user };
+        console.log(11111);
+        console.log(d);
+        d.specsattr = JSON.stringify(d.specsattr);
+
+        reqgoodsAdd(this.user).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("添加成功");
+            this.cancel();
+            this.reqGoodsList();
+            this.reqGoodsCount();
+          }
+        });
+      });
+    },
+    // 获取指定一条数据
+    getOne(id) {
+      reqgoodsDetail(id).then((res) => {
+        this.user = res.data.list;
+        this.user.id = id;
+        //请二级list
+        this.getSecondList();
+        //图片
+        this.imgUrl = this.$imgPre + this.user.img;
+        //属性
+        this.user.specsattr = JSON.parse(this.user.specsattr);
+        //计算规格属性的list
+        this.getAttrs();
+      });
+    },
+    // 修改
+    update() {
+      this.check().then(() => {
+        let d = { ...this.user };
+        d.specsattr = JSON.stringify(d.specsattr);
+        reqgoodsUpdate(d).then((res) => {
+          if (res.data.code == 200) {
+            successAlert("更新成功");
+            this.cancel();
+            this.empty();
+            this.reqGoodsList();
+          }
+        });
+      });
+    },
+    openen() {
+      this.editor = new E("#edit");
+      this.editor.create();
+    },
+    // 清空
+    empty() {
+      this.user = {
+        first_cateid: "",
+        second_cateid: "",
+        goodsname: "",
+        price: "",
+        market_price: "",
+        img: null,
+        description: "",
+        specsid: "",
+        specsattr: [],
+        isnew: 1,
+        ishot: 1,
+        status: 1,
+      };
+      //二级分类的list
+      this.secondCateList = [];
+      //图片临时地址
+      this.imgUrl = "";
+      //规格属性list
+      this.attrsList = [];
+    },
+
+    closed() {
+      if (this.info.title === "编辑商品") {
+        this.empty();
+      }
+    },
+
+    //封装验证方法
+    check() {
+      return new Promise((resolve, reject) => {
+        if (this.user.first_cateid === "") {
+          errorAlert("一级分类不能为空");
+          return;
+        }
+        if (this.user.second_cateid === "") {
+          errorAlert("二级分类不能为空");
+          return;
+        }
+        if (this.user.goodsname === "") {
+          errorAlert("商品名称为空");
+          return;
+        }
+        if (this.user.price === "") {
+          errorAlert("商品价格为空");
+          return;
+        }
+        if (this.user.market_price === "") {
+          errorAlert("商品市场价格为空");
+          return;
+        }
+        if (!this.user.img) {
+          errorAlert("请选择图片");
+          return;
+        }
+        if (this.user.specsid === "") {
+          errorAlert("请选择商品规格");
+          return;
+        }
+        if (this.user.specsattr.length === 0) {
+          errorAlert("请选择商品属性");
+          return;
+        }
+        if (this.editor.txt.html() === "") {
+          errorAlert("请输入商品描述");
+          return;
+        }
+        resolve();
+      });
+    },
+  },
+  //  定义空的原始数据
+  data() {
+    return {
+      user: {
+        first_cateid: "",
+        second_cateid: "",
+        goodsname: "",
+        price: "",
+        market_price: "",
+        img: "null",
+        description: "",
+        specsid: "",
+        specsattr: "",
+        isnew: 1,
+        ishot: 1,
+        status: 1,
+      },
+      imgUrl: "",
+      secondCateList: [],
+      attrsList: [],
+      rules: {
+        first_cateid: [
+          { required: true, message: "请输入一级分类", trigger: "change" },
+        ],
+        second_cateid: [
+          { required: true, message: "请输入二级分类", trigger: "change" },
+        ],
+        goodsname: [
+          { required: true, message: "请输入商品名称", trigger: "blur" },
+        ],
+        price: [{ required: true, message: "请输入商品价格", trigger: "blur" }],
+        market_price: [
+          { required: true, message: "请输入商品市场价格", trigger: "blur" },
+        ],
+        specsid: [
+          { required: true, message: "请输入商品规格", trigger: "change" },
+        ],
+        specsattr: [
+          {
+            type: "array",
+            required: true,
+            message: "请至少选择一个规格属性",
+            trigger: "change",
+          },
+        ],
+      },
+    };
+  },
+  mounted() {
+    this.reqCateList();
+    this.reqSpecsList(true);
+  },
+};
+</script>
+
+<style scoped lang="stylus">
+.box >>> .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+}
+</style>

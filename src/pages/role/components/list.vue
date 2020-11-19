@@ -28,8 +28,8 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import {reqRoleDel} from "../../../untils/http" 
-import {successAlert} from "../../../untils/alert"
+import {reqRoleDel} from "../../../utils/http" 
+import {successAlert} from "../../../utils/alert"
 export default {
   props:["list"],
   computed: {
