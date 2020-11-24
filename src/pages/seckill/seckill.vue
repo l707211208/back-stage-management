@@ -1,8 +1,11 @@
 <template>
   <div>
-    <el-button type="primary">添加</el-button>
-    <v-list :info="info"></v-list>
-    <v-form :info="info"></v-form>
+    <el-button type="primary" @click="willAdd">添加</el-button>
+
+    <v-list  @edit="edit"></v-list>
+   
+
+    <v-form :info="info" ref="form"></v-form>
   </div>
 </template>
 
@@ -11,24 +14,42 @@ import { mapActions, mapGetters } from "vuex";
 import vList from "./components/list.vue";
 import vForm from "./components/form.vue";
 export default {
-  computed: {
-    ...mapGetters({}),
-  },
-  methods: {
-    ...mapActions({}),
+  components: {
+    vList,
+    vForm,
   },
   data() {
     return {
       info: {
-        isshow: true,
+        isshow: false,
         title: "添加活动",
       },
     };
   },
-  mounted() {},
-  components: {
-    vList,
-    vForm,
+  computed: {
+    ...mapGetters({}),
+  },
+  methods: {
+    ...mapActions({
+}),
+    willAdd() {
+      this.info = {
+        isshow: true,
+        title: "添加活动",
+      };
+    },
+  
+    edit(id) {
+      this.info = {
+        isshow: true,
+        title: "修改活动",
+      };
+      this.$refs.form.getOne(id);
+    }, 
+  },
+
+  mounted() {
+ 
   },
 };
 </script>

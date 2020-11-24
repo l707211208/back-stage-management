@@ -472,3 +472,57 @@ export const reqbannerUpdate = (user) => {
         data: d
     })
 }
+
+// =====================秒杀============================
+export const reqseckList = (p) => {
+    return axios({
+        url: baseUrl + "/api/secklist",
+        method: "get",
+        params: p
+    })
+}
+//添加
+export const reqseckAdd = (user) => {
+    return axios({
+        url: baseUrl + "/api/seckadd",
+        method: "post",
+        data: qs.stringify(user)
+    })
+}
+
+// 删除
+export const reqseckDel = (id) => {
+    return axios({
+        url: baseUrl + "/api/seckdelete",
+        method: "post",
+        data: qs.stringify({
+            id: id
+        })
+    })
+}
+
+// 详情
+export const reqseckDetail = id => {
+    return axios({
+        url: baseUrl + "/api/seckinfo",
+        method: "get",
+        params: {
+            id: id
+        }
+    })
+}
+
+
+
+export const reqseckUpdate = (user) => {
+    let d = new FormData()
+    for (let i in user) {
+        d.append(i, user[i])
+    }
+    return axios({
+        url: baseUrl + "/api/banneredit",
+        method: "post",
+        data: d
+    })
+}
+

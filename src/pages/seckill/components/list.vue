@@ -8,7 +8,7 @@
       default-expand-all
       :tree-props="{children: 'children'}"
     >
-      <el-table-column prop="id" label="活动名称"></el-table-column>
+      <el-table-column prop="title" label="活动名称"></el-table-column>
       <el-table-column label="状态">
         <template slot-scope="scope">
           <el-button type="primary" v-if="scope.row.status===1">启用</el-button>
@@ -22,23 +22,41 @@
         </template>
       </el-table-column>
     </el-table>
+  
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import { reqgoodsDel,reqseckDel } from "../../../utils/http";
+import { successAlert } from "../../../utils/alert";
 export default {
   computed: {
-    ...mapGetters({}),
+    ...mapGetters({
+      list: "seck/list",
+    }),
   },
   methods: {
-    ...mapActions({}),
+    ...mapActions({
+      reqList: "seck/reqList",
+    }),
+
+    del(id) {
+      reqseckDel(id).then((res) => {
+        if (res.data.code == 200) {
+          successAlert(res.data.msg);
+          this.reqList();
+        }
+      });
+    },
+    edit(id) {
+      this.$emit("edit", id);
+    },
   },
-  data() {
-    return {};
+
+  mounted() {
+    this.reqList();
   },
-  mounted() {},
-  components: {},
 };
 </script>
 
